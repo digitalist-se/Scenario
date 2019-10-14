@@ -23,22 +23,21 @@ class Tasks extends \Piwik\Plugin\Tasks
     final function schedule(): \Piwik\Scheduler\Schedule\Schedule
     {
         // @todo move all hard coded values to the UI, and build scenarios there.
-       return $this->hourly('checkCron', "80###", self::HIGH_PRIORITY);
+       return $this->hourly('checkCoreArchive', "1", self::HIGH_PRIORITY);
     }
 
 
-    final function checkCron (string $param): API
+    final function checkCoreArchive (string $minutes): void
     {
         /* @todo - all hardcoded values should come from the UI - $param is a beast - could only be a string,
-         * so we need to explode that string, like: $param1###$param2###$param3
+         * so we need to explode that string, like: $param1###$param2###$param3, like:
+         * list($user, $pass, $uid, $gid, $gecos, $home, $shell) = explode("###", $param);
          */
-
-        //list($user, $pass, $uid, $gid, $gecos, $home, $shell) = explode(":", $param);
         $api = new API();
         $check = $api->calculateCron();
-        if ($check  >= 60) {
+        if ($check  >= $minutes) {
             $courier = new CourierAPI();
-            $result = $courier->sendWebhook(3,"Cron ran for $check minutes ago $param",'internal');
+            $result = $courier->sendWebhook(3,"Core archive ran for *$check* minutes ago",'internal');
         }
 
     }

@@ -9,7 +9,9 @@
 namespace Piwik\Plugins\Scenario;
 
 use Piwik\CronArchive;
+use Piwik\NoAccessException;
 use Piwik\Option;
+use Piwik\Piwik;
 
 /**
  * API for plugin Scenario
@@ -18,15 +20,23 @@ use Piwik\Option;
  */
 class API extends \Piwik\Plugin\API
 {
-    public function  getLatestCronRun(): string {
+    final function  getLatestCronRun(): string {
+
+        try {
+            Piwik::checkUserIsNotAnonymous();
+        } catch (NoAccessException $e) {
+        }
         $lastRunTime = (int)Option::get(CronArchive::OPTION_ARCHIVING_FINISHED_TS);
         return $lastRunTime;
     }
 
-    public function calculateCron(): string {
+    final function calculateCron(): string {
+        try {
+            Piwik::checkUserIsNotAnonymous();
+        } catch (NoAccessException $e) {
+        }
         $result = $this->getLatestCronRun();
         $now = time();
-        //$lastRunTimePretty = Date::factory($result)->getLocalized(DateTimeFormatProvider::DATETIME_FORMAT_LONG);
         $duration = $now-$result;
         $minutes = (int)($duration/60);
         return $minutes;
