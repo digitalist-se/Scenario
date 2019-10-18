@@ -8,6 +8,7 @@
 declare(strict_types = 1);
 namespace Piwik\Plugins\Scenario;
 
+use Piwik\Piwik;
 use Piwik\Plugins\Courier\API as CourierAPI;
 
 /**
@@ -35,10 +36,13 @@ class Tasks extends \Piwik\Plugin\Tasks
          */
         $api = new API();
         $check = $api->calculateCron();
+        $triggered = false;
         if ($check  >= $minutes) {
             $courier = new CourierAPI();
-            $result = $courier->sendWebhook(3,"Core archive ran for *$check* minutes ago",'internal');
+            $result = $courier->sendWebhook(1,"Core archive ran for *$check* minutes ago",'internal');
+            $triggered = true;
         }
+        Piwik::postEvent('Scenario.checkCoreArchive', [$triggered]);
 
     }
 }
