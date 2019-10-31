@@ -10,6 +10,7 @@ namespace Piwik\Plugins\Scenario;
 
 use Piwik\Piwik;
 use Piwik\Plugins\Courier\API as CourierAPI;
+use Piwik\Scheduler\Schedule\Schedule;
 
 /**
  * Class Tasks
@@ -21,8 +22,9 @@ class Tasks extends \Piwik\Plugin\Tasks
     /*
      * @return function
      */
-    final function schedule(): \Piwik\Scheduler\Schedule\Schedule
+    final function schedule(): Schedule
     {
+
         // @todo move all hard coded values to the UI, and build scenarios there.
        return $this->hourly('checkCoreArchive', "1", self::HIGH_PRIORITY);
     }
